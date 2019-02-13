@@ -98,7 +98,9 @@ point_pair to a point_recd.
 ......................................................................*)
 
 let point_pair_to_recd =
-  fun _ -> failwith "point_pair_to_recd not implemented" ;;
+  fun (a : point_pair) : point_recd -> 
+  let (x1, y1) = a in
+  {x=x1;y=y1};;
 
 (*......................................................................
 Exercise 6: Write a function point_recd_to_pair that converts a
@@ -106,7 +108,8 @@ point_recd to a point_pair.
 ......................................................................*)
 
 let point_recd_to_pair =
-  fun _ -> failwith "point_recd_to_pair not implemented" ;;
+  fun (a : point_recd) : point_pair -> 
+  (a.x, a.y);;
    
 (*======================================================================
 Part 2: A simple database of records
