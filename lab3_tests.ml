@@ -37,17 +37,34 @@ let test_ids () =
 	unit_test(ids college = [482958285; 603858772; 993855891]) "ids happy_path";;
 
 let test_verify () =
-	unit_test((Lab3.verify college) = false) "verify false";;
+	unit_test((Lab3.verify college) = false) "verify false";
+	unit_test((Lab3.verify college_true) = true) "verify true";;
 
+(*Part III Unit Tests*)
+let test_zip () = 
+  unit_test ((zip [][]) = []) "zip empty";
+  unit_test ((zip [1; 2; 3] ['a';'b';'c']) = [(1, 'a'); (2, 'b'); (3, 'c')]) "zip lists";;
 
+let test_partition () =
+	unit_test (partition (fun x -> x mod 3 = 0) [3; 4; 5; 10; 11; 12; 1] = ([3; 12], [4; 5; 10; 11; 1])) "partition list";;
+
+let test_apply () =
+	unit_test (apply (~-) 9 = ~-9) "apply negation";
+	unit_test(apply pred 42 = 41) "apply pred";
+    unit_test(apply (fun x -> x ** 2.) 3.14159 = 9.86958772809999907) "apply square";;
 
 (*Run all unit tests.*)
-let _ = test_add_point_pair () ;;
-let _ = test_add_point_recd () ;;
-let _ = test_dot_product_pair () ;;
-let _ = test_dot_product_recd () ;;
-let _ = test_point_pair_to_recd () ;;
-let _ = test_point_recd_to_pair () ;;
-let _ = test_transcript () ;;
-let _ = test_ids () ;;
-let _ = test_verify () ;;
+let _ = test_add_point_pair () ;
+test_add_point_recd () ;
+test_dot_product_pair () ;
+test_dot_product_recd () ;
+test_point_pair_to_recd () ;
+test_point_recd_to_pair () ;
+test_transcript () ;
+test_ids () ;
+test_verify () ;
+test_zip ();
+test_partition ();
+test_apply ();;
+
+

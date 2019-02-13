@@ -138,6 +138,11 @@ let college =
     { name = "Sandy"; id = 482958285; course = "ec10b" }
   ] ;;
 
+  let college_true = 
+  [ { name = "Pat";   id = 603858772; course = "cs51" };
+    { name = "Pat";   id = 603858772; course = "expos20" };
+  ] ;;
+
 (* In the following exercises, you'll want to avail yourself of the
 List module functions, writing the requested functions in higher-order
 style rather than handling the recursion yourself.
@@ -186,11 +191,13 @@ For example:
 ......................................................................*)
 let num_classes_for_id (enrollments: enrollment list) (student_id: int) : bool = 
   let id_list = List.filter (fun x -> x.id = student_id) enrollments in
-  (List.length (List.sort_uniq compare id_list) = 1);;
+  let names = List.map (fun x -> x.name) id_list in
+  (List.length (List.sort_uniq compare names) = 1);;
 
 let rec verify (enrollments : enrollment list) : bool =
   match enrollments with
   |[] -> true
+(*   |h::[] -> (num_classes_for_id enrollments h.id) *)
   |h::t -> 
     if num_classes_for_id enrollments h.id = true then verify t else false;; 
 
@@ -215,8 +222,8 @@ worry about explicitly handling the anomalous case when the two lists
 are of different lengths.)
 ......................................................................*)
 
-let zip =
-  fun _ -> failwith "zip not implemented" ;;
+let zip (fst: 'a list) (snd : 'b list) : ('a * 'b) list =
+  List.map2 (fun x y -> (x,y)) fst snd;;
 
 (*......................................................................
 Exercise 11: Partitioning a list -- Given a boolean function, say
@@ -242,9 +249,13 @@ should be as polymorphic as possible?
 
 Now write the function.
 ......................................................................*)
-   
-let partition =
-  fun _ -> failwith "partition not implemented" ;;
+let rec partition (f : ('a -> bool)) (lst : 'a list): ('a list * 'a list) =
+  let pairs = ([],[]) in
+  let move ((t1,t2) : 'a list * 'a list)(element : 'a): ('a list * 'a list) =
+    if (f element) then (t1 @ [element], t2) else (t1,t2 @ [element]) in
+  List.fold_left move pairs lst;;
+  
+(*TODO: Reimplement using sorting instead of append d/t efficiency*)
 
 (*......................................................................
 Exercise 12: We can think of function application itself as a
@@ -285,5 +296,5 @@ Given the above, what should the type of the function "apply" be?
 Now write the function.
 ......................................................................*)
 
-let apply =
-  fun _ -> failwith "apply not implemented" ;;
+let apply (fst : ('a -> 'b)) (snd : 'a) : 'b =
+  fst snd;;
