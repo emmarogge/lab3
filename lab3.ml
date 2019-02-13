@@ -3,7 +3,7 @@
                     Polymorphism and record types
  *)
 
-
+open List;;
 (*
 Objective:
 
@@ -158,7 +158,7 @@ For example:
 let transcript (enrollments : enrollment list)
                (student : int)
              : enrollment list =
-  failwith "transcript not implemented" ;;
+  List.filter (fun x -> x.id = student) enrollments ;;
   
 (*......................................................................
 Exercise 8: Define a function called ids that takes an enrollment
@@ -173,7 +173,7 @@ For example:
 ......................................................................*)
 
 let ids (enrollments: enrollment list) : int list =
-  failwith "ids not implemented" ;;
+  List.sort_uniq compare (List.map (fun x -> x.id) enrollments) ;;
   
 (*......................................................................
 Exercise 9: Define a function called verify that determines whether all
@@ -184,9 +184,15 @@ For example:
 # verify college ;;
 - : bool = false
 ......................................................................*)
+let num_classes_for_id (enrollments: enrollment list) (student_id: int) : bool = 
+  let id_list = List.filter (fun x -> x.id = student_id) enrollments in
+  (List.length (List.sort_uniq compare id_list) = 1);;
 
-let verify (enrollments : enrollment list) : bool =
-  failwith "verify not implemented" ;;
+let rec verify (enrollments : enrollment list) : bool =
+  match enrollments with
+  |[] -> true
+  |h::t -> 
+    if num_classes_for_id enrollments h.id = true then verify t else false;; 
 
 (*======================================================================
 Part 3: Polymorphism
