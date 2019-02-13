@@ -43,7 +43,8 @@ expression.
 ......................................................................*)
 
 let add_point_pair (p1 : point_pair) (p2 : point_pair) : point_pair =
-  failwith "add_point_pair not impemented" ;;
+  let [(x1, y1),(x2,y2)] = [p1,p2] in
+  (x1 + x2, y1 + y2) ;;
 
 (* Analogously, we can define a point by using a record to package up
 the x and y coordinates. *)
@@ -57,20 +58,22 @@ Implement a function add_point_recd to add two points of type
 point_recd and returning a point _rec as well.
 ......................................................................*)
 
-let add_point_recd =
-  fun _ -> failwith "add_point_recd not implemented" ;;
+let add_point_recd (a: point_recd) (b: point_recd) : point_recd = 
+  let c = a.x + b.x in
+  let d = a.y + b.y in
+  {x=c;y=d} ;;
 
 (* Recall the dot product from Lab 2. The dot product of two points
 (x1, y1) and (x2, y2) is the sum of the products of their x and y
 coordinates.
-
 ........................................................................
 Exercise 3: Write a function dot_product_pair to compute the dot
 product for points encoded as the point_pair type.
 ......................................................................*)
 
 let dot_product_pair (p1 : point_pair) (p2 : point_pair) : int =
-  failwith "dot_product_pair not implemented" ;;
+  let [(x1, y1),(x2,y2)] = [p1,p2] in
+  (x1 * x2) + (y1 * y2) ;;
 
 (*......................................................................
 Exercise 4: Write a function dot_product_recd to compute the dot
@@ -78,7 +81,9 @@ product for points encoded as the point_recd type.
 ......................................................................*)
 
 let dot_product_recd (p1 : point_recd) (p2 : point_recd) : int =
-  failwith "dot_product_recd not implemented" ;;
+  let c = p1.x * p2.x in
+  let d = p1.y * p2.y in
+  (c + d) ;;
 
 (* Converting between the pair and record representations of points
 
