@@ -58,10 +58,8 @@ Implement a function add_point_recd to add two points of type
 point_recd and returning a point _rec as well.
 ......................................................................*)
 
-let add_point_recd (a: point_recd) (b: point_recd) : point_recd = 
-  let c = a.x + b.x in
-  let d = a.y + b.y in
-  {x=c;y=d} ;;
+let add_point_recd (p1: point_recd) (p2: point_recd) : point_recd = 
+  {x = p1.x + p2.x; y = p1.y + p2.y} ;;
 
 (* Recall the dot product from Lab 2. The dot product of two points
 (x1, y1) and (x2, y2) is the sum of the products of their x and y
@@ -71,8 +69,7 @@ Exercise 3: Write a function dot_product_pair to compute the dot
 product for points encoded as the point_pair type.
 ......................................................................*)
 
-let dot_product_pair (p1 : point_pair) (p2 : point_pair) : int =
-  let [(x1, y1),(x2,y2)] = [p1,p2] in
+let dot_product_pair (x1, y1 : point_pair) (x2, y2 : point_pair) : int =  
   (x1 * x2) + (y1 * y2) ;;
 
 (*......................................................................
@@ -81,9 +78,7 @@ product for points encoded as the point_recd type.
 ......................................................................*)
 
 let dot_product_recd (p1 : point_recd) (p2 : point_recd) : int =
-  let c = p1.x * p2.x in
-  let d = p1.y * p2.y in
-  (c + d) ;;
+  p1.x * p2.x + p1.y * p2.y ;;
 
 (* Converting between the pair and record representations of points
 
@@ -97,19 +92,17 @@ Exercise 5: Write a function point_pair_to_recd that converts a
 point_pair to a point_recd.
 ......................................................................*)
 
-let point_pair_to_recd =
-  fun (a : point_pair) : point_recd -> 
-  let (x1, y1) = a in
-  {x=x1;y=y1};;
+let point_pair_to_recd ((x, y) : point_pair) : point_recd = 
+  {x; y}
+;;
 
 (*......................................................................
 Exercise 6: Write a function point_recd_to_pair that converts a
 point_recd to a point_pair.
 ......................................................................*)
 
-let point_recd_to_pair =
-  fun (a : point_recd) : point_pair -> 
-  (a.x, a.y);;
+let point_recd_to_pair ({x; y} : point_recd) : point_pair =
+  x, y;;
    
 (*======================================================================
 Part 2: A simple database of records
@@ -163,7 +156,7 @@ For example:
 let transcript (enrollments : enrollment list)
                (student : int)
              : enrollment list =
-  List.filter (fun x -> x.id = student) enrollments ;;
+  List.filter (fun {id; _} ->  id  = student) enrollments ;;
   
 (*......................................................................
 Exercise 8: Define a function called ids that takes an enrollment
@@ -189,7 +182,7 @@ For example:
 # verify college ;;
 - : bool = false
 ......................................................................*)
-let num_classes_for_id (enrollments: enrollment list) (student_id: int) : bool = 
+(* let num_classes_for_id (enrollments: enrollment list) (student_id: int) : bool = 
   let id_list = List.filter (fun x -> x.id = student_id) enrollments in
   let names = List.map (fun x -> x.name) id_list in
   (List.length (List.sort_uniq compare names) = 1);;
@@ -197,10 +190,17 @@ let num_classes_for_id (enrollments: enrollment list) (student_id: int) : bool =
 let rec verify (enrollments : enrollment list) : bool =
   match enrollments with
   |[] -> true
-(*   |h::[] -> (num_classes_for_id enrollments h.id) *)
   |h::t -> 
-    if num_classes_for_id enrollments h.id = true then verify t else false;; 
+    if num_classes_for_id enrollments h.id = true then verify t else false;;  *)
+let names (enrollments : enrollment list) : string list  =
+  List.sort_uniq (compare)
+                 (List.map (fun {name; _} -> name) enrollments) ;;
 
+let verify (enrollments  : enrollment list) : bool =
+  List.for_all (fun l -> List.length l = 1)
+               (List.map 
+                  (fun student -> names (transcript enrollments student))
+                  (ids enrollments)) ;;
 (*======================================================================
 Part 3: Polymorphism
 
@@ -222,8 +222,11 @@ worry about explicitly handling the anomalous case when the two lists
 are of different lengths.)
 ......................................................................*)
 
-let zip (fst: 'a list) (snd : 'b list) : ('a * 'b) list =
-  List.map2 (fun x y -> (x,y)) fst snd;;
+let rec zip (fst: 'a list) (snd : 'b list) : ('a * 'b) list =
+  (* List.map2 (fun x y -> (x,y)) fst snd;; *) (*My original solution*)
+  match fst, snd with
+  |[],[] -> []
+  |fst_h::fst_t, snd_h::snd_t -> (fst_h, snd_h) :: (zip fst_t snd_t);;
 
 (*......................................................................
 Exercise 11: Partitioning a list -- Given a boolean function, say
@@ -249,14 +252,15 @@ should be as polymorphic as possible?
 
 Now write the function.
 ......................................................................*)
-let rec partition (f : ('a -> bool)) (lst : 'a list): ('a list * 'a list) =
+(* let rec partition (f : ('a -> bool)) (lst : 'a list): ('a list * 'a list) =
   let pairs = ([],[]) in
   let move ((t1,t2) : 'a list * 'a list)(element : 'a): ('a list * 'a list) =
     if (f element) then (t1 @ [element], t2) else (t1,t2 @ [element]) in
-  List.fold_left move pairs lst;;
+  List.fold_left move pairs lst;; *)
   
-(*TODO: Reimplement using sorting instead of append d/t efficiency*)
-
+(*DONE: Reimplement using sorting instead of append d/t efficiency*)
+let partition (condition: ('a->bool))(lst: 'a list): 'a list * 'a list =
+  List.filter condition lst, List.filter (fun x -> not (condition x)) lst;;
 (*......................................................................
 Exercise 12: We can think of function application itself as a
 higher-order function (!). It takes two arguments -- a function and
